@@ -7,24 +7,25 @@
 -- ## Time series data
 -- ###################
 
--- With video game data, everything is time series.
-        
+        -- With video game data, everything is time series.        
         -- I have a table that contains the purchases of video game players
-        -- I want the median number of days between purchases        
+        -- I want the median number of days between purchases 
+        
         with    purch_sequence as 
         (
         select
                 playerid, purchtime
                 
                 -- I lay out each step of the calculation to check my work
-
                 -- bring in the subsequent purchase time
+                
                 , lead(purchasetime) over (
                         partition by playerid order by purchasetime
                         ) as nextpurchase        
                 
                 -- subtract original purchase from subsequent purchase. 
                 -- defaults to days
+                
                 , lead(purchasetime) over (
                         partition by playerid order by purchasetime
                         ) - purchasetime::date
@@ -33,10 +34,10 @@
         
         -- now i get the median
         -- I admit I have to look this up every time I use it
+        
         select  percentile_cont(0.50) within
                 group(order by days_btn_purchase)
-                as median_days_next_purch
-                
+                as median_days_next_purch        
         from    purch_sequence
         where   days_btn_purchase is not null -- because it's cleaner
 
@@ -83,7 +84,6 @@
                 
                 , DATEDIFF(year, L.startdate, L.expirationdate) as l_yrs_btn_start_exp -- years between start and end
                 , left(SM.sku_duration, 1) as sm_prod_duration_num
-                
 
         from    license L
         left    join sku_mapping SM -- left join in case there are no skus listed for this id
